@@ -46,23 +46,28 @@ def default():
 			"\nesMiembroActivo: ", esMiembroActivo,
 			"\nsalarioEstimado: ", salarioEstimado)
 
-			# http://localhost:5000/abandono/cliente/?scoreCrediticio=3&pais=Francia&genero=M&edad=36&tenencia=2&balance=1200.34&numDeProductos=3&tieneTarjetaCredito=1&esMiembroActivo=0&salarioEstimado=120000
+	# Transformado/Escalando la data
+	[pais] = loaded_labelEncoderX1.transform([pais])
+	[genero] = loaded_labelEncoderX2.transform([genero])
 
-	# img_path='../samples/'+image_name
-	# img = image.load_img(img_path, target_size=(img_width, img_height))
-	# img = image.img_to_array(img)
-	# x = np.expand_dims(img, axis=0) * 1./255
-	#
-	# with graph.as_default():
-	# 	resultado = "Predicción: "
-	# 	score = loaded_model.predict(x)
-	# 	if score < 0.5:
-	# 		resultado += "Abdomen X-ray, score: " + str(score[0][0])
-	# 	else:
-	# 	    resultado += "Pulmon X-ray, score: " + str(score[0][0])
-	# 	print('Predicción:', score, 'Abdomen X-ray' if score < 0.5 else 'Pulmon X-ray')
-	# 	return resultado
+	cliente = np.array([scoreCrediticio,pais,genero,edad,tenencia,balance,numDeProductos,tieneTarjetaCredito,esMiembroActivo,salarioEstimado])
+	print("\ncliente: ", cliente)
+	cliente = loaded_scaler.transform([cliente])
+	print("cliente Norm: ", cliente)
 
-	return "success"
+	with graph.as_default():
+		resultado = "Predicción: "
+		score = loaded_model.predict(cliente)
+		print("\nFinal score: ", score)
+		abandona = (score > 0.5)
+		if abandona:
+			resultado += "Abandona"
+		else:
+		    resultado += "No abandona"
+		return resultado + ', score: ' + str(score)
+
+	# http://localhost:5000/abandono/cliente/?scoreCrediticio=3&pais=France&genero=Male&edad=36&tenencia=2&balance=1200.34&numDeProductos=3&tieneTarjetaCredito=1&esMiembroActivo=0&salarioEstimado=120000
+	# http://localhost:5000/abandono/cliente/?scoreCrediticio=1&pais=Spain&genero=Female&edad=50&tenencia=2&balance=200.34&numDeProductos=1&tieneTarjetaCredito=0&esMiembroActivo=0&salarioEstimado=85000
+
 # Run de application
 app.run(host='0.0.0.0',port=5000)

@@ -1,0 +1,108 @@
+{
+	"id": "4932d458-15ab-3dc3-5842-80e13a9d77ce",
+	"name": "Test",
+	"description": "",
+	"order": [
+		"1be20c2d-7360-44af-d633-3d86d8df2335"
+	],
+	"folders": [],
+	"folders_order": [],
+	"timestamp": 1559927439340,
+	"owner": "3390341",
+	"public": false,
+	"requests": [
+		{
+			"id": "1be20c2d-7360-44af-d633-3d86d8df2335",
+			"headers": "",
+			"headerData": [],
+			"url": "http://localhost:5000/abandono/cliente/?scoreCrediticio=3&pais=France&genero=Male&edad=36&tenencia=2&balance=1200.34&numDeProductos=3&tieneTarjetaCredito=1&esMiembroActivo=0&salarioEstimado=120000",
+			"queryParams": [
+				{
+					"key": "scoreCrediticio",
+					"value": "3",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "pais",
+					"value": "France",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "genero",
+					"value": "Male",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "edad",
+					"value": "36",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "tenencia",
+					"value": "2",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "balance",
+					"value": "1200.34",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "numDeProductos",
+					"value": "3",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "tieneTarjetaCredito",
+					"value": "1",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "esMiembroActivo",
+					"value": "0",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				},
+				{
+					"key": "salarioEstimado",
+					"value": "120000",
+					"equals": true,
+					"description": "",
+					"enabled": true
+				}
+			],
+			"preRequestScript": null,
+			"pathVariables": {},
+			"pathVariableData": [],
+			"method": "POST",
+			"data": null,
+			"dataMode": "params",
+			"version": 2,
+			"tests": null,
+			"currentHelper": "normal",
+			"helperAttributes": {},
+			"time": 1559927757508,
+			"name": "postman-client",
+			"description": "",
+			"collectionId": "4932d458-15ab-3dc3-5842-80e13a9d77ce",
+			"responses": []
+		}
+	]
+}

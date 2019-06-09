@@ -1,21 +1,37 @@
 {
 	"id": "4932d458-15ab-3dc3-5842-80e13a9d77ce",
 	"name": "Test",
-	"description": "",
+	"description": null,
 	"order": [
-		"1be20c2d-7360-44af-d633-3d86d8df2335"
+		"1be20c2d-7360-44af-d633-3d86d8df2335",
+		"3529adaf-4655-7b8f-ecf9-665a46899d8b"
 	],
 	"folders": [],
 	"folders_order": [],
-	"timestamp": 1559927439340,
+	"timestamp": 0,
 	"owner": "3390341",
 	"public": false,
 	"requests": [
 		{
+			"folder": null,
 			"id": "1be20c2d-7360-44af-d633-3d86d8df2335",
+			"name": "postman-client",
+			"dataMode": "params",
+			"data": null,
+			"auth": null,
+			"events": null,
+			"rawModeData": null,
+			"descriptionFormat": "html",
+			"description": null,
+			"variables": null,
 			"headers": "",
-			"headerData": [],
+			"method": "POST",
+			"pathVariables": {},
 			"url": "http://localhost:5000/abandono/cliente/?scoreCrediticio=3&pais=France&genero=Male&edad=36&tenencia=2&balance=1200.34&numDeProductos=3&tieneTarjetaCredito=1&esMiembroActivo=0&salarioEstimado=120000",
+			"preRequestScript": null,
+			"tests": null,
+			"currentHelper": null,
+			"helperAttributes": null,
 			"queryParams": [
 				{
 					"key": "scoreCrediticio",
@@ -88,21 +104,38 @@
 					"enabled": true
 				}
 			],
+			"headerData": [],
+			"pathVariableData": [],
+			"collectionId": "4932d458-15ab-3dc3-5842-80e13a9d77ce"
+		},
+		{
+			"id": "3529adaf-4655-7b8f-ecf9-665a46899d8b",
+			"headers": "Content-Type: application/json\n",
+			"headerData": [
+				{
+					"key": "Content-Type",
+					"value": "application/json",
+					"description": "",
+					"enabled": true
+				}
+			],
+			"url": "http://localhost:5000/abandono/cliente/",
+			"folder": null,
+			"queryParams": [],
 			"preRequestScript": null,
 			"pathVariables": {},
 			"pathVariableData": [],
 			"method": "POST",
-			"data": null,
-			"dataMode": "params",
-			"version": 2,
+			"data": [],
+			"dataMode": "raw",
 			"tests": null,
 			"currentHelper": "normal",
 			"helperAttributes": {},
-			"time": 1559927757508,
-			"name": "postman-client",
-			"description": "",
+			"time": 1560045584745,
+			"name": "postman-client POST",
+			"description": null,
 			"collectionId": "4932d458-15ab-3dc3-5842-80e13a9d77ce",
-			"responses": []
+			"rawModeData": "{\"scoreCrediticio\":475,\"pais\":\"Germany\",\"genero\":\"Female\",\"edad\":44,\"tenencia\":4,\"balance\":2312,\"numDeProductos\":\"4\",\"tieneTarjetaCredito\":\"0\",\"esMiembroActivo\":\"1\",\"salarioEstimado\":123123}"
 		}
 	]
 }

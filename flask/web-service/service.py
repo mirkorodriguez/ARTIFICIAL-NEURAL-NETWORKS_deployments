@@ -1,11 +1,13 @@
 #Import Flask
 from flask import Flask, request
+from flask_cors import CORS
 from keras.preprocessing import image
 from ann_loader import cargarModelo
 import numpy as np
 
 #Initialize the application service
 app = Flask(__name__)
+CORS(app)
 global loaded_model,loaded_scaler,loaded_labelEncoderX1,loaded_labelEncoderX2, graph
 loaded_model,loaded_scaler,loaded_labelEncoderX1,loaded_labelEncoderX2, graph = cargarModelo()
 
@@ -20,20 +22,32 @@ def churn():
 
 @app.route('/abandono/cliente/', methods=['GET','POST'])
 def default():
+	# print (request.data)
+	# print (request.args)
+	# print (request.form)
+	data = None
+	if request.method == 'GET':
+		print ("GET Method")
+		data = request.args
 
-	print (request.args)
+	if request.method == 'POST':
+		print ("POST Method")
+		if (request.is_json):
+			data = request.get_json()
 
-	# Obtenendo parametros
-	scoreCrediticio = request.args.get("scoreCrediticio")
-	pais = request.args.get("pais")
-	genero = request.args.get("genero")
-	edad = request.args.get("edad")
-	tenencia = request.args.get("tenencia")
-	balance = request.args.get("balance")
-	numDeProductos = request.args.get("numDeProductos")
-	tieneTarjetaCredito = request.args.get("tieneTarjetaCredito")
-	esMiembroActivo = request.args.get("esMiembroActivo")
-	salarioEstimado = request.args.get("salarioEstimado")
+	print("Data received:", data)
+
+	# Obteniendo parametros
+	scoreCrediticio = data.get("scoreCrediticio")
+	pais = data.get("pais")
+	genero = data.get("genero")
+	edad = data.get("edad")
+	tenencia = data.get("tenencia")
+	balance = data.get("balance")
+	numDeProductos = data.get("numDeProductos")
+	tieneTarjetaCredito = data.get("tieneTarjetaCredito")
+	esMiembroActivo = data.get("esMiembroActivo")
+	salarioEstimado = data.get("salarioEstimado")
 
 	print ("\nscoreCrediticio: ",scoreCrediticio,
 			"\npais: ", pais,
@@ -56,7 +70,7 @@ def default():
 	print("cliente Norm: ", cliente)
 
 	with graph.as_default():
-		resultado = "Predicción: "
+		resultado = ""
 		score = loaded_model.predict(cliente)
 		print("\nFinal score: ", score)
 		abandona = (score > 0.5)
@@ -64,7 +78,7 @@ def default():
 			resultado += "Abandona"
 		else:
 		    resultado += "No abandona"
-		return resultado + ', score: ' + str(score)
+		return resultado + ', score: ' + str(score[0])
 
 	# http://localhost:5000/abandono/cliente/?scoreCrediticio=3&pais=France&genero=Male&edad=36&tenencia=2&balance=1200.34&numDeProductos=3&tieneTarjetaCredito=1&esMiembroActivo=0&salarioEstimado=120000
 	# http://localhost:5000/abandono/cliente/?scoreCrediticio=1&pais=Spain&genero=Female&edad=50&tenencia=2&balance=200.34&numDeProductos=1&tieneTarjetaCredito=0&esMiembroActivo=0&salarioEstimado=85000

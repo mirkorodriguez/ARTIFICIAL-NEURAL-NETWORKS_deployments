@@ -1,9 +1,15 @@
+import os
 #Import Flask
 from flask import Flask, request
 from flask_cors import CORS
 from keras.preprocessing import image
 from ann_loader import cargarModelo
 import numpy as np
+
+# On IBM Cloud Cloud Foundry, get the port number from the environment variable PORT
+# When running this app on the local machine, default the port to 5000
+port = int(os.getenv('PORT', 5000))
+print ("Port recognized: ", port)
 
 #Initialize the application service
 app = Flask(__name__)
@@ -84,4 +90,4 @@ def default():
 	# http://localhost:5000/abandono/cliente/?scoreCrediticio=1&pais=Spain&genero=Female&edad=50&tenencia=2&balance=200.34&numDeProductos=1&tieneTarjetaCredito=0&esMiembroActivo=0&salarioEstimado=85000
 
 # Run de application
-app.run(host='0.0.0.0',port=5000)
+app.run(host='0.0.0.0',port=port)

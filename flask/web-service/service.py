@@ -20,7 +20,7 @@ loaded_model,loaded_scaler,loaded_labelEncoderX1,loaded_labelEncoderX2, graph = 
 #Define a route
 @app.route('/')
 def main_page():
-	return 'Bienvenido a la URP - Curso de RNA en los negocios!'
+	return 'Modelo desplegado en la Nube!'
 
 @app.route('/abandono/', methods=['GET','POST'])
 def churn():

@@ -7,7 +7,7 @@ cp -f ../service.py service.py
 cp -f ../ann_loader.py ann_loader.py
 
 # Copy model .h5 to models/
-SOURCE="../../../models/classification/churn-clients"
+SOURCE="../../../../models/classification/churn-clients"
 DESTINATION="models/classification/churn-clients"
 mkdir -p $DESTINATION
 ls -l $SOURCE

@@ -38,6 +38,8 @@ print("Image:",image_path)
 
 # Preprocesar imagen
 img = image.img_to_array(image.load_img(image_path, target_size=(224, 224)))
+if (model_name == 'inception' or model_name == 'mobilenet'):
+    img = img / 255.
 img = img.astype('float32')
 
 payload = {"instances": [{'input_image': img.tolist()}]}

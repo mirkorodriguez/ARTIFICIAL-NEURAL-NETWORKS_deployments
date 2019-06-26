@@ -1,93 +1,91 @@
-import os
 #Import Flask
-from flask import Flask, request
+from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
+#Import Keras
 from keras.preprocessing import image
-from ann_loader import cargarModelo
+from keras.applications.imagenet_utils import decode_predictions
+#Import python files
 import numpy as np
 
-# On IBM Cloud Cloud Foundry, get the port number from the environment variable PORT
-# When running this app on the local machine, default the port to 5000
-port = int(os.getenv('PORT', 5000))
-print ("Port recognized: ", port)
+import os
+from werkzeug.utils import secure_filename
+
+UPLOAD_FOLDER = '../../../samples/images/uploads'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 #Initialize the application service
 app = Flask(__name__)
 CORS(app)
-global loaded_model,loaded_scaler,loaded_labelEncoderX1,loaded_labelEncoderX2, graph
-loaded_model,loaded_scaler,loaded_labelEncoderX1,loaded_labelEncoderX2, graph = cargarModelo()
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Funciones
+def port(x):
+    return {
+        'inception': '8501',
+        'vgg': '8502',
+        'resnet': '8503',
+        'mobilenet': '8504',
+    }[x]
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 #Define a route
 @app.route('/')
-def main_page():
-	return 'Modelo desplegado en la Nube!'
-
-@app.route('/abandono/', methods=['GET','POST'])
-def churn():
-	return 'Modelo de Abandono de Clientes!'
-
-@app.route('/abandono/cliente/', methods=['GET','POST'])
 def default():
-	# print (request.data)
-	# print (request.args)
-	# print (request.form)
-	data = None
-	if request.method == 'GET':
-		print ("GET Method")
-		data = request.args
+    return 'TensorFlow Serving ... Go to /<model>/predict'
 
-	if request.method == 'POST':
-		print ("POST Method")
-		if (request.is_json):
-			data = request.get_json()
+@app.route('/inception/predict/',methods=['POST'])
+def predict():
 
-	print("Data received:", data)
+    model_name = "inception"
 
-	# Obteniendo parametros
-	scoreCrediticio = data.get("scoreCrediticio")
-	pais = data.get("pais")
-	genero = data.get("genero")
-	edad = data.get("edad")
-	tenencia = data.get("tenencia")
-	balance = data.get("balance")
-	numDeProductos = data.get("numDeProductos")
-	tieneTarjetaCredito = data.get("tieneTarjetaCredito")
-	esMiembroActivo = data.get("esMiembroActivo")
-	salarioEstimado = data.get("salarioEstimado")
+    data = {"success": False}
 
-	print ("\nscoreCrediticio: ",scoreCrediticio,
-			"\npais: ", pais,
-			"\ngenero: ", genero,
-			"\nedad: ", edad,
-			"\ntenencia: ", tenencia,
-			"\nbalance: ", balance,
-			"\nnumDeProductos: ", numDeProductos,
-			"\ntieneTarjetaCredito: ", tieneTarjetaCredito,
-			"\nesMiembroActivo: ", esMiembroActivo,
-			"\nsalarioEstimado: ", salarioEstimado)
+    if request.method == "POST":
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            print('No file part')
+        file = request.files['file']
+        # if user does not select file, browser also submit a empty part without filename
+        if file.filename == '':
+            print('No selected file')
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-	# Transformado/Escalando la data
-	[pais] = loaded_labelEncoderX1.transform([pais])
-	[genero] = loaded_labelEncoderX2.transform([genero])
+            #loading image
+            filename = UPLOAD_FOLDER + '/' + filename
+            print("filename:",filename)
 
-	cliente = np.array([scoreCrediticio,pais,genero,edad,tenencia,balance,numDeProductos,tieneTarjetaCredito,esMiembroActivo,salarioEstimado])
-	print("\ncliente: ", cliente)
-	cliente = loaded_scaler.transform([cliente])
-	print("cliente Norm: ", cliente)
+            img = image.img_to_array(image.load_img(filename, target_size=(224, 224)))
+            img = img.astype('float32')
 
-	with graph.as_default():
-		resultado = ""
-		score = loaded_model.predict(cliente)
-		print("\nFinal score: ", score)
-		abandona = (score > 0.5)
-		if abandona:
-			resultado += "Abandona"
-		else:
-		    resultado += "No abandona"
-		return resultado + ', score: ' + str(score[0])
+            payload = {"instances": [{'input_image': img.tolist()}]}
 
-	# http://localhost:5000/abandono/cliente/?scoreCrediticio=3&pais=France&genero=Male&edad=36&tenencia=2&balance=1200.34&numDeProductos=3&tieneTarjetaCredito=1&esMiembroActivo=0&salarioEstimado=120000
-	# http://localhost:5000/abandono/cliente/?scoreCrediticio=1&pais=Spain&genero=Female&edad=50&tenencia=2&balance=200.34&numDeProductos=1&tieneTarjetaCredito=0&esMiembroActivo=0&salarioEstimado=85000
+            # URI
+            uri = ''.join(['http://localhost:',port(model_name),'/v1/models/',model_name,':predict'])
+            print("URI:",uri)
+
+            # Request al modelo desplegado en TensorFlow Serving
+            r = requests.post(uri, json=payload)
+            pred = json.loads(r.content.decode('utf-8'))
+
+            # Decodificando decoder util
+            predictions = decode_predictions(np.array(pred['predictions']),top=1)
+            print("Predictions:\n",predictions)
+            label = predictions[0][0][1]
+            score = predictions[0][0][2]
+
+            #Results as Json
+            data["predictions"] = []
+            r = {"label": label, "score": float(score)}
+            data["predictions"].append(r)
+
+            #Success
+            data["success"] = True
+
+            return jsonify(data)
 
 # Run de application
-app.run(host='0.0.0.0',port=port)
+app.run(host='0.0.0.0',port=5000)

@@ -35,8 +35,6 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
                                                       output_names, freeze_var_names)
         return frozen_graph
 
-frozen_graph = freeze_session(K.get_session(),
-                              output_names=[out.op.name for out in model.outputs])
 
 
 #path_to_load = "../../../models/classification/images/pretrained/keras/"
@@ -51,9 +49,9 @@ models_version = '1'
 for model_name in models:
     print ("\nConverting:", model_name, "to TensorFlow Model")
     model = load_model(''.join([path_to_load,model_name,'.h5']))
-    
-    # Save model in 
-    tf.train.write_graph(frozen_graph, 
-                         ''.join([path_to_save,model_name,'/',models_version,'/']), 
-                         ''.join([model_name,'.pb']) , 
+
+    # Save model in
+    tf.train.write_graph(freeze_session(K.get_session(), output_names=[out.op.name for out in model.outputs]),
+                         ''.join([path_to_save,model_name,'/',models_version,'/']),
+                         ''.join([model_name,'.pb']) ,
                          as_text=False)

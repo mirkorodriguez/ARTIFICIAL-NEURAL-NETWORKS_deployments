@@ -15,13 +15,13 @@ def port(x):
         'mobilenet': '8504',
     }[x]
 
-def decoder(y):
-    return {
-        'inception': inception_v3,
-        'vgg': vgg16,
-        'resnet': resnet50,
-        'mobilenet': mobilenet,
-    }[y]
+# def decoder(y):
+#     return {
+#         'inception': inception_v3,
+#         'vgg': vgg16,
+#         'resnet': resnet50,
+#         'mobilenet': mobilenet,
+#     }[y]
 
 # Argumentos
 ap = argparse.ArgumentParser()
@@ -37,8 +37,8 @@ print("Image:",image_path)
 
 
 # Preprocesar imagen
-img = image.img_to_array(image.load_img(image_path, target_size=(224, 224))) / 255.
-img = img.astype('float16')
+img = image.img_to_array(image.load_img(image_path, target_size=(224, 224)))
+img = img.astype('float32')
 
 payload = {"instances": [{'input_image': img.tolist()}]}
 
@@ -51,10 +51,13 @@ r = requests.post(uri, json=payload)
 pred = json.loads(r.content.decode('utf-8'))
 
 # Decodificando decoder util
-print(decode_predictions(np.array(pred['predictions'])))
+predictions = decode_predictions(np.array(pred['predictions']),top=1)
+print("Predictions:\n",predictions)
+print("Class:",predictions[0][0][1])
+print("Score",predictions[0][0][2])
 
 # Decodificando predicciones
 # top=1 : el mejor resultado
-decoder_model = decoder(model_name)
-print("\ndecoder_model:",decoder_model)
-print(json.dumps(decoder_model.decode_predictions(np.array(pred['predictions']),top=5)[0]))
+#decoder_model = decoder(model_name)
+#print("\ndecoder_model:",decoder_model)
+#print(json.dumps(decoder_model.decode_predictions(np.array(pred['predictions']),top=5)[0]))

@@ -3,6 +3,7 @@ import json
 import numpy as np
 import requests
 from keras.applications import inception_v3, vgg16, resnet50, mobilenet
+from keras.applications.imagenet_utils import decode_predictions
 from keras.preprocessing import image
 
 # Funciones
@@ -39,20 +40,21 @@ print("Image:",image_path)
 img = image.img_to_array(image.load_img(image_path, target_size=(224, 224))) / 255.
 img = img.astype('float16')
 
-payload = {
-    "instances": [{'input_image': img.tolist()}]
-}
+payload = {"instances": [{'input_image': img.tolist()}]}
 
 # URI
 uri = ''.join(['http://localhost:',port(model_name),'/v1/models/',model_name,':predict'])
-print(uri)
+print("URI:",uri)
 
 # Request al modelo desplegado en TensorFlow Serving
 r = requests.post(uri, json=payload)
 pred = json.loads(r.content.decode('utf-8'))
 
+# Decodificando decoder util
+print(decode_predictions(np.array(pred['predictions'])))
+
 # Decodificando predicciones
 # top=1 : el mejor resultado
 decoder_model = decoder(model_name)
-print("decoder_model:",decoder_model)
-print(json.dumps(decoder_model.decode_predictions(np.array(pred['predictions']),top=1)[0]))
+print("\ndecoder_model:",decoder_model)
+print(json.dumps(decoder_model.decode_predictions(np.array(pred['predictions']),top=5)[0]))

@@ -1,3 +1,4 @@
+#Reference: https://towardsdatascience.com/deploying-keras-models-using-tensorflow-serving-and-flask-508ba00f1037
 #Import Flask
 from flask import Flask, request, jsonify, redirect
 from flask_cors import CORS
@@ -7,6 +8,8 @@ from keras.applications.imagenet_utils import decode_predictions
 #Import python files
 import numpy as np
 
+import requests
+import json
 import os
 from werkzeug.utils import secure_filename
 
@@ -30,18 +33,8 @@ def port(x):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-#Define a route
-@app.route('/')
-def default():
-    return 'TensorFlow Serving ... Go to /<model>/predict'
-
-@app.route('/inception/predict/',methods=['POST'])
-def predict():
-
-    model_name = "inception"
-
+def predict(model_name):
     data = {"success": False}
-
     if request.method == "POST":
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -59,7 +52,11 @@ def predict():
             print("filename:",filename)
 
             img = image.img_to_array(image.load_img(filename, target_size=(224, 224)))
-            img = img.astype('float32')
+
+            if (model_name == 'inception' or model_name == 'mobilenet'):
+                img = img / 255.
+
+            img = img.astype('float16')
 
             payload = {"instances": [{'input_image': img.tolist()}]}
 
@@ -86,6 +83,36 @@ def predict():
             data["success"] = True
 
             return jsonify(data)
+
+
+#Define a route
+@app.route('/')
+def default():
+    return 'TensorFlow Serving ... Go to /<model>/predict'
+
+# VGG
+@app.route('/vgg/predict/',methods=['POST'])
+def vgg():
+    model_name = "vgg"
+    return (predict(model_name))
+
+# Inception V3
+@app.route('/inception/predict/',methods=['POST'])
+def inception():
+    model_name = "inception"
+    return (predict(model_name))
+
+# ResNet
+@app.route('/resnet/predict/',methods=['POST'])
+def resnet():
+    model_name = "resnet"
+    return (predict(model_name))
+
+# MobileNet
+@app.route('/mobilenet/predict/',methods=['POST'])
+def mobilenet():
+    model_name = "mobilenet"
+    return (predict(model_name))
 
 # Run de application
 app.run(host='0.0.0.0',port=5000)

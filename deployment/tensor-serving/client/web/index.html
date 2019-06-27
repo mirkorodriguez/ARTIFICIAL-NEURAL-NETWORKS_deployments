@@ -1,0 +1,154 @@
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=ISO 8859-1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Clasificar Imagen</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css">
+  <script>
+    var loadFile = function(event) {
+      var output = document.getElementById('imagen');
+      output.heigth = "50";
+      output.witdh = "50";
+      output.src = URL.createObjectURL(event.target.files[0]);
+
+      var x = document.getElementById("resultadosdiv");
+      x.style.display = "none";
+    };
+  </script>
+</head>
+
+<body ng-app="myApp" ng-cloak style="background-color: #efefef" ng-controller="myCtrl" layout="column">
+  <md-toolbar>
+    <div class="md-toolbar-tools">
+      <span>Clasificar Imagen</span>
+    </div>
+  </md-toolbar>
+
+
+  <md-content flex>
+    <md-card>
+      <md-card-content>
+        <p><em>Elija la imagen a clasificar:</em></p>
+       </md-card-content>
+    </md-card>
+
+  <form name="myForm">
+    <md-card>
+      <md-card-content>
+
+        <div layout="row" layout-align="space-between center">
+          <span>Modelo Pre-entrenado:</span>
+          <md-select ng-model="data.modelo" placeholder="Seleccionar" required>
+            <md-option value="inception">Inception V3</md-option>
+            <md-option value="vgg">VGG 16</md-option>
+            <md-option value="resnet">ResNet 50</md-option>
+            <md-option value="mobilenet">MobileNet</md-option>
+          </md-select>
+        </div>
+
+        <div style="margin-bottom:32px" layout="row" layout-align="space-between center">
+          <span>Imagen:</span>
+          <input type="file" name="file" ng-model="cn" class="form-control" onchange="loadFile(event)" accept=".jpg,.jpeg,.png">
+        </div>
+
+        <img id="imagen" class="img-responsive"/>
+
+      </md-card-content>
+
+      <md-card-actions layout="row" layout-align="end center">
+        <md-button ng-click="submit()" class="md-accent md-raised">Clasificar</md-button>
+      </md-card-actions>
+
+    </md-card>
+    </form>
+
+    <md-card>
+      <md-card-content>
+        <div id="resultadosdiv" >
+            <div >
+              <table id="resultados" ng-show="resultsPreview">
+                <tr>
+                  <th style="font-weight:bold">Clase</th>
+                  <th style="font-weight:bold">Score</th>
+                </tr>
+                <tr ng-repeat= "element in predictions" >
+                  <td style="color:blue;font-weight:bold">{:element.label:}</td>
+                  <td style="color:blue;font-weight:bold">{:element.score:}</td>
+                </tr>
+              </table>
+          </div>
+        </div>
+      </md-card-content>
+    </md-card>
+
+  </md-content>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-aria.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular-animate.js"></script>
+
+  <script>
+    var app = angular.module('myApp', ['ngMaterial']);
+
+    app.config(['$interpolateProvider', function($interpolateProvider) {
+      $interpolateProvider.startSymbol('{:');
+      $interpolateProvider.endSymbol(':}');
+    }]);
+
+    app.config(function($mdThemingProvider) {
+      $mdThemingProvider.theme('default')
+        .primaryPalette('blue-grey')
+        .accentPalette('orange');
+    });
+
+    app.controller('myCtrl', ['$scope', '$http',
+      function($scope, $http) {
+
+        $scope.showError = false; // set Error flag
+      	$scope.resultsPreview = false; // set Success Flag
+        $scope.loading = false;
+
+        $scope.submit = function() {
+
+          var myform = document.forms['myForm'];
+          var formData = new FormData(myform);
+          console.log(myform)
+
+          // $scope.showError = false; // set Error flag
+        	$scope.resultsPreview = true; // set Success Flag
+          // $scope.loading = false;
+          $scope.rp = "http://35.193.192.160:5000";
+
+          console.log("Starting ...");
+          console.log("Developed by Mirko J. Rodriguez");
+          console.log("consultando ...");
+          endPoint = $scope.rp + "/vgg/predict/";
+
+          $http({
+            method : 'POST',
+            url : endPoint,
+            headers: {
+                'Content-Type': undefined
+            },
+            data: formData
+          }).success(function(data, status, headers, config) {
+            $scope.predictions = data.predictions;
+            console.log(data.predictions);
+            $scope.resultsPreview = true; // set Success Flag
+            var x = document.getElementById("resultadosdiv");
+            x.style.display = "block";
+          }).error(function(data, status, headers, config) {
+            $scope.result = 'Error';
+          });
+
+        }
+      }
+    ]);
+  </script>
+
+
+</body>
+</html>

@@ -49,7 +49,7 @@ def predict(model_name):
 
             #loading image
             filename = UPLOAD_FOLDER + '/' + filename
-            print("filename:",filename)
+            print("\nfilename:",filename)
 
             img = image.img_to_array(image.load_img(filename, target_size=(224, 224)))
 

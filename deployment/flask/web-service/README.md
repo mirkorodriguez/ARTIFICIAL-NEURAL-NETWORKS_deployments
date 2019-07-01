@@ -7,8 +7,6 @@ Your IBM Account credentials will be needed.
  ./deploy-on-ibmcloud.sh
 ```
 
-Dataset obtained from: https://www.bvl.com.pe/inf_cotizaciones53100_U0lERVJDMQ.html
-
 ## Deploying locally
 *Activate your environment. In my case it's called 'tensorflow'
 
@@ -23,6 +21,3 @@ Dataset obtained from: https://www.bvl.com.pe/inf_cotizaciones53100_U0lERVJDMQ.h
 
 #Python runtime in IBM-Cloud:
 https://devcenter.heroku.com/articles/python-runtimes
-
-#TensorServing:
-https://towardsdatascience.com/deploying-keras-models-using-tensorflow-serving-and-flask-508ba00f1037

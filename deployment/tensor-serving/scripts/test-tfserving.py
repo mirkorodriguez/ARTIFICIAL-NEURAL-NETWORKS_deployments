@@ -45,7 +45,7 @@ img = img.astype('float32')
 payload = {"instances": [{'input_image': img.tolist()}]}
 
 # URI
-uri = ''.join(['http://localhost:',port(model_name),'/v1/models/',model_name,':predict'])
+uri = ''.join(['http://127.0.0.1:',port(model_name),'/v1/models/',model_name,':predict'])
 print("URI:",uri)
 
 # Request al modelo desplegado en TensorFlow Serving

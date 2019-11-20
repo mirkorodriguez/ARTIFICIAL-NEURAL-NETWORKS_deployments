@@ -9,6 +9,8 @@ services:
       - 9000:8501
     volumes:
       - ${MODELS}/inception:/models/inception
+    environment:
+      - MODEL_NAME=inception
 
   vgg:
     image: tensorflow/serving
@@ -18,6 +20,8 @@ services:
       - 9001:8501
     volumes:
       - ${MODELS}/vgg:/models/vgg
+    environment:
+      - MODEL_NAME=vgg
 
   resnet:
     image: tensorflow/serving
@@ -27,6 +31,8 @@ services:
       - 9002:8501
     volumes:
       - ${MODELS}/resnet:/models/resnet
+    environment:
+      - MODEL_NAME=resnet
 
   mobilenet:
     image: tensorflow/serving
@@ -36,6 +42,8 @@ services:
       - 9003:8501
     volumes:
       - ${MODELS}/mobilenet:/models/mobilenet
+    environment:
+      - MODEL_NAME=mobilenet
 
   visualizer:
     image: dockersamples/visualizer

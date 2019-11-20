@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  inception:
+    image: tensorflow/serving
+    deploy:
+      replicas: 1
+    ports:
+      - 9000:8501
+    volumes:
+      - ${MODELS}/inception:/models/inception
+
+  vgg:
+    image: tensorflow/serving
+    deploy:
+      replicas: 2
+    ports:
+      - 9001:8501
+    volumes:
+      - ${MODELS}/vgg:/models/vgg
+
+  resnet:
+    image: tensorflow/serving
+    deploy:
+      replicas: 2
+    ports:
+      - 9002:8501
+    volumes:
+      - ${MODELS}/resnet:/models/resnet
+
+  mobilenet:
+    image: tensorflow/serving
+    deploy:
+      replicas: 3
+    ports:
+      - 9003:8501
+    volumes:
+      - ${MODELS}/mobilenet:/models/mobilenet
+
+  visualizer:
+    image: dockersamples/visualizer
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    ports:
+      - 5001:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro

@@ -15,7 +15,7 @@ services:
   vgg:
     image: tensorflow/serving
     deploy:
-      replicas: 2
+      replicas: 1
     ports:
       - 9001:8501
     volumes:

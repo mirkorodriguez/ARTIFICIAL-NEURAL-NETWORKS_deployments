@@ -26,7 +26,7 @@ services:
   resnet:
     image: tensorflow/serving
     deploy:
-      replicas: 2
+      replicas: 3
     ports:
       - 9002:8501
     volumes:
@@ -37,7 +37,7 @@ services:
   mobilenet:
     image: tensorflow/serving
     deploy:
-      replicas: 3
+      replicas: 1
     ports:
       - 9003:8501
     volumes:

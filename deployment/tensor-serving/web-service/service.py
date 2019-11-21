@@ -24,10 +24,10 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Funciones
 def port(x):
     return {
-        'inception': '8501',
-        'vgg': '8502',
-        'resnet': '8503',
-        'mobilenet': '8504',
+        'inception': '9000',
+        'vgg': '9001',
+        'resnet': '9002',
+        'mobilenet': '9003',
     }[x]
 
 def allowed_file(filename):
